@@ -8,6 +8,7 @@ import "@/assets/main.css";
 import Login from "./components/Login";
 import Signup from "./components/SignUp";
 import ScholarshipForm from "./components/ScholarshipForm";
+import Form from "./components/Form";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 window.axios = axios;
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/scholarship" element={<ScholarshipForm />} />
+        <Route path="/form" element={<Form/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

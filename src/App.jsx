@@ -195,7 +195,7 @@ function App() {
       <footer>
         <div className="mx-auto max-w-7xl mb-16 px-6 md:px-20 grid grid-cols-1 md:grid-cols-4 gap-3">
           <div>
-            <Link to={"/"} className="mb-2">
+            <Link to={'/'} className="mb-2">
               <span className="sr-only">Your Company</span>
               <img className="h-8 w-auto" src="/logo.png" alt="" />
             </Link>
@@ -231,6 +231,6 @@ function App() {
         </p>
       </footer>
     </div>
-  );
+  )
 }
-export default App;
+export default App
