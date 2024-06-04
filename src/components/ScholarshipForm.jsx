@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Grid, IconButton } from '@mui/material';
+import React, { useEffect, useState,useRef } from 'react';
+import { Box, TextField, Button, Typography, Grid, IconButton,Checkbox } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,6 +9,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Link } from "react-router-dom";
+import Pdf from 'react-to-pdf';
+import { PDFExport } from '@progress/kendo-react-pdf';
+
+
 
 function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
@@ -23,6 +27,8 @@ function createData(name, calories, fat, carbs, protein) {
   ];
 
 const ScholarshipForm = () => {
+  const targetref=useRef();
+  
   // State variables for form fields
   const [applicantName, setApplicantName] = useState('');
   const [courseName, setCourseName] = useState('');
@@ -48,12 +54,12 @@ const ScholarshipForm = () => {
   const [totalRequirement, setTotalRequirement] = useState('');
   const [otherScholarship, setOtherScholarship] = useState('');
   const [ownContribution, setOwnContribution] = useState('');
-  const [requiredScholarship, setRequiredScholarship] = useState('');
-  const [examPassed, setExamPassed] = useState('');
-  const [examMedium, setExamMedium] = useState('');
-  const [examMonthYear, setExamMonthYear] = useState('');
-  const [examPercentage, setExamPercentage] = useState('');
-  const [boardUniversity, setBoardUniversity] = useState('');
+  // const [requiredScholarship, setRequiredScholarship] = useState('');
+  // const [examPassed, setExamPassed] = useState('');
+  // const [examMedium, setExamMedium] = useState('');
+  // const [examMonthYear, setExamMonthYear] = useState('');
+  // const [examPercentage, setExamPercentage] = useState('');
+  // const [boardUniversity, setBoardUniversity] = useState('');
   const [guardianName, setGuardianName] = useState('');
   const [guardianAddress, setGuardianAddress] = useState('');
   const [guardianQualification, setGuardianQualification] = useState('');
@@ -64,12 +70,21 @@ const ScholarshipForm = () => {
   const [residenceStatus, setResidenceStatus] = useState('');
   const [guardianAadharCard, setGuardianAadharCard] = useState('');
   const [guardianPanCard, setGuardianPanCard] = useState('');
-  const [familyMembers, setFamilyMembers] = useState([]);
   const [recommendationPerson1, setRecommendationPerson1] = useState('');
   const [recommendationPerson2, setRecommendationPerson2] = useState('');
 
+  //States for familty details and income table
+  const [familyMembers, setFamilyMembers] = useState([{ name: '', relationship: '', occupation: '', income: '' }]);
+  const [totalFamilyIncome, setTotalFamilyIncome] = useState('');
+
+  //State for total requiremnt for education
+  const [totalReqForEducation, setTotalReqForEducation]= useState('');
+
   // State for scholarship details table
   const [scholarshipDetails, setScholarshipDetails] = useState([{ trustName: '', amount: '' }]);
+
+  //State for total scholarship requiremnet
+  const [amtOfScholarshipReq, setAmtOfScholarshipReq]= useState('');
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -77,6 +92,78 @@ const ScholarshipForm = () => {
     // Logic to handle form submission
     console.log('Form submitted!');
   };
+
+
+  //States for Past Educational details table
+  const [tableData, setTableData] = useState([
+    { examPassed: 'S.S.C', medium:'', monthYear:'', percentage: '', boardUniversity: '' },
+    { examPassed: 'H.S.C', medium:'', monthYear:'', percentage: '', boardUniversity: '' },
+    { examPassed: 'F.Y', medium:'', monthYear:'', percentage: '', boardUniversity: '' },
+    { examPassed: 'S.Y', medium:'', monthYear:'', percentage: '', boardUniversity: '' },
+    { examPassed: 'T.Y', medium:'', monthYear:'', percentage: '', boardUniversity: '' },
+    { examPassed: 'Others', medium:'', monthYear:'', percentage: '', boardUniversity: '' },
+  ]);
+
+  
+    const handleInputChange = (rowIndex, colIndex, value) => {
+      const newTableData = [...tableData];
+      newTableData[rowIndex][colIndex] = value;
+      setTableData(newTableData);
+    };
+
+    //states for self attested table
+  const [selfAttested, setSelfAttested] = useState([
+    { srno: 1, studentchecklist: 'Duly filled & signed application form', student: false, office: false },
+    { srno: 2, studentchecklist: 'Additional two passport size recent photographs of the student with the name written behind it', student: false, office: false },
+    { srno: 3, studentchecklist: 'Attested copies of SSC, HSC & University annual examination mark sheet/result copies', student: false, office: false },
+    { srno: 4, studentchecklist: 'Proof of address first & last page of Ration card', student: false, office: false },
+    { srno: 5, studentchecklist: 'Aadhaar card, Pan Card of Parent & Student', student: false, office: false },
+    { srno: 6, studentchecklist: 'Cast Certificate (if eligible)', student: false, office: false },
+    { srno: 7, studentchecklist: 'Proof of Income - Salary certificate or Govt. approved Income certificate or Pay Slip', student: false, office: false },
+    { srno: 8, studentchecklist: 'Fees structure of School/College/Institute with break-up of fees (in original)', student: false, office: false },
+    { srno: 9, studentchecklist: 'Proof of admission/Selection in course for which scholarship is applied', student: false, office: false },
+    { srno: 10, studentchecklist: 'Copies of certificates of academic, co-curricular & extracurricular activities', student: false, office: false },
+    { srno: 11, studentchecklist: 'Copy of bank pass book - First page (name, bank a/c no. & address details)', student: false, office: false },
+  ]);
+
+  //check box handling
+  const handleCheckboxChange = (rowIndex, type) => {
+    const updatedSelfAttested = [...selfAttested];
+    updatedSelfAttested[rowIndex][type] = !updatedSelfAttested[rowIndex][type];
+    setSelfAttested(updatedSelfAttested);
+  };
+  
+  //Family details handling
+  const handleFamilyMemberChange = (index, field, value) => {
+    const newFamilyMembers = [...familyMembers];
+    newFamilyMembers[index][field] = value;
+    setFamilyMembers(newFamilyMembers);
+  };
+
+  //Initial row for family member details
+  const addFamilyMemberRow = () => {
+    setFamilyMembers([...familyMembers, { name: '', relationship: '', occupation: '', income: '' }]);
+  };
+
+  //calculating total family income
+  useEffect( () => {
+    const total = familyMembers.reduce((total, member) => total + parseFloat(member.income || 0), 0);
+    setTotalFamilyIncome(total);
+  });
+
+  //calculating total final amount of scholarship required
+  useEffect(()=>{
+    const sum1= scholarshipDetails.reduce((total,current)=>total+parseFloat(current.amount || 0),0);
+    const sum2= parseFloat(otherScholarship || 0)+parseFloat(ownContribution || 0);
+    setAmtOfScholarshipReq(parseFloat(totalRequirement || 0)-(sum1+sum2));
+    });
+
+  //Calculate the total requirements for the course
+  useEffect(() => {
+    
+    setTotalReqForEducation(parseFloat(courseFees || 0)+parseFloat(otherExpenses || 0));
+    
+  }, [courseFees, otherExpenses]);
 
   // Function to handle adding a new row to scholarship details table
   const handleAddRow = () => {
@@ -97,7 +184,10 @@ const ScholarshipForm = () => {
             ZAKAT SCHOLARSHIP FORM
         </Button>
         </Link>
-      <form onSubmit={handleSubmit}>
+        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => generatePDF(targetRef, {filename: 'page.pdf'})} >
+          Download PDF
+        </Button>
+      <form onSubmit={handleSubmit} ref={targetref}>
         <Grid container spacing={3}>
           {/* Applicant Information */}
           <Grid item xs={12}>
@@ -114,7 +204,7 @@ const ScholarshipForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Name of Course"
+              label="Name of the Course"
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
             />
@@ -297,8 +387,8 @@ const ScholarshipForm = () => {
             <TextField
               fullWidth
               label="Total Requirement"
-              value={totalRequirement}
-              onChange={(e) => setTotalRequirement(e.target.value)}
+              value={totalReqForEducation}
+              onChange={(e) => setTotalReqForEducation(e.target.value)}
             />
           </Grid>
 
@@ -371,18 +461,70 @@ const ScholarshipForm = () => {
             <TextField
               fullWidth
               label="Amount of Scholarship required"
-              value={requiredScholarship}
-              onChange={(e) => setRequiredScholarship(e.target.value)}
+              value={amtOfScholarshipReq}
+              onChange={(e) => setAmtOfScholarshipReq(e.target.value)}
             />
           </Grid>
 
-          {/* Past Educational Information */}
-          {/* <Grid item xs={12}>
-            <Typography variant="h6">Past Educational Information</Typography>
-          </Grid> */}
-          {/* Add past educational information fields here */}
 
-          {/* Details about Parent/Guardian */}
+
+          {/* Past Educational Information */}
+
+          <Grid item xs={12}>
+  <Typography variant="h6">Past Educational Information</Typography>
+  <TableContainer component={Paper}>
+    <Table sx={{ minWidth: 650 }} aria-label="past educational details table">
+      <TableHead>
+        <TableRow>
+          <TableCell>Exam Passed</TableCell>
+          <TableCell>Medium</TableCell>
+          <TableCell>Month & Year</TableCell>
+          <TableCell>Percentage%</TableCell>
+          <TableCell>Name of Board/University</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {tableData.map((row, rowIndex) => (
+          <TableRow key={rowIndex}>
+            <TableCell>
+              {row.examPassed}
+            </TableCell>
+            <TableCell align="right">
+              <TextField
+                value={row.medium}
+                onChange={(e) => handleInputChange(rowIndex, 'medium', e.target.value)}
+                fullWidth
+              />
+            </TableCell>
+            <TableCell align="right">
+              <TextField
+                value={row.monthYear}
+                onChange={(e) => handleInputChange(rowIndex, 'monthYear', e.target.value)}
+                fullWidth
+              />
+            </TableCell>
+            <TableCell align="right">
+              <TextField
+                value={row.percentage}
+                onChange={(e) => handleInputChange(rowIndex, 'percentage', e.target.value)}
+                fullWidth
+              />
+            </TableCell>
+            <TableCell align="right">
+              <TextField
+                value={row.boardUniversity}
+                onChange={(e) => handleInputChange(rowIndex, 'boardUniversity', e.target.value)}
+                fullWidth
+              />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
+</Grid>
+
+
           <Grid item xs={12}>
             <Typography variant="h6">Details about Parent/Guardian</Typography>
           </Grid>
@@ -468,39 +610,89 @@ const ScholarshipForm = () => {
           </Grid>
 
           {/* Details of Family Members & Income */}
-          <Grid item xs={12}>
-            <Typography variant="h6">Details of Family Members & Income</Typography>
-          </Grid>
-          {/* Add details of family members & income fields here */}
-          <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>S.no</TableCell>
-            <TableCell align="right">Name of Family Members</TableCell>
-            <TableCell align="right">Relationship with Applicant</TableCell>
-            <TableCell align="right">Service / Business Student</TableCell>
-            <TableCell align="right">Monthly Income</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+         
+          {/* <Grid item xs={12} sx={{ textAlign: 'right', marginTop: 2 }}>
+        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => generatePDF(targetRef, {filename: 'page.pdf'})} >
+          Download PDF
+        </Button>
+      </Grid> */}
+         {/* <div ref={targetRef}> */}
+         
+      <Grid item xs={12} sm={6}>
+        <Typography variant="h6" gutterBottom>Details of Family Members & Income</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Sr. No.</TableCell>
+                <TableCell>Name of Family Member</TableCell>
+                <TableCell>Relationship with Applicant</TableCell>
+                <TableCell>Service/Business/Student</TableCell>
+                <TableCell>Monthly Income</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {familyMembers.map((member, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    <TextField
+                      value={member.name}
+                      onChange={(e) => handleFamilyMemberChange(index, 'name', e.target.value)}
+                      fullWidth
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      value={member.relationship}
+                      onChange={(e) => handleFamilyMemberChange(index, 'relationship', e.target.value)}
+                      fullWidth
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      value={member.occupation}
+                      onChange={(e) => handleFamilyMemberChange(index, 'occupation', e.target.value)}
+                      fullWidth
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      value={member.income}
+                      onChange={(e) => handleFamilyMemberChange(index, 'income', e.target.value)}
+                      fullWidth
+                      type="number"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow>
+                <TableCell colSpan={4} align="right">Total Family Income</TableCell>
+                <TableCell>{totalFamilyIncome}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
+      <Grid item xs={12} sx={{ marginTop: 2 }}>
+        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={addFamilyMemberRow} fullWidth>
+          Add Row
+        </Button>
+        <Typography variant="h7" align='left' sx={{marginLeft:'100px'}}>I solemnly affirm that I am eligible for Zakat and the detils given in this form are correct and if anything is found untrue, the application will be rejected.</Typography>
+        <br/>
+      <br/>
+      <br/>
+      <div style={{ width: '100%', display: 'flex',
+          justifyContent: 'space-between'}}>
+        <div><b>______________________________</b><br/><b>Signature of the Student</b></div>
+        <div><b>_______________________________________</b><br/><b>Signature of the Parent/Guardian</b></div>
+      </div>
+      </Grid>
+      
+      
+
           {/* Recommendation */}
           <Grid item xs={12}>
   <Typography variant="h6">Recommendation</Typography>
@@ -559,6 +751,90 @@ const ScholarshipForm = () => {
     />
   </Paper>
 </Grid> 
+
+{/* Bonafied Certificate From the head of the institution */}
+<Grid item>
+      <Typography variant="h6" gutterBottom>
+        Bonafied Certificate From The Head Of The Institution
+      </Typography>
+      <Typography variant="h7" gutterBottom>
+        I certify that Mr./Miss/Master
+        <TextField
+          size="small"
+          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          value={applicantName}
+        /> 
+        is seeking admission/admitted in this institution for the year 20__ to 20__ in 
+        <TextField
+          size="small"
+          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          value={courseName}
+        /> 
+        Course. The Total Annual Fees is Rs.
+        <TextField
+          size="small"
+          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          value={courseFees}
+        /> 
+        . He/She is eligible for the Govt. Scholarship of Rs.
+        <TextField
+          size="small"
+          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          value={amtOfScholarshipReq}
+        />
+      </Typography>
+      <br/>
+      <br/>
+      <br/>
+      <div style={{ width: '100%', display: 'flex',
+          justifyContent: 'space-between'}}>
+        <div><b>Seal of the Institue</b></div>
+        <div><b>Signature of the Head of the Institution</b></div>
+      </div>
+      
+    </Grid>
+
+{/* Self attected documents verification */}
+<Grid item xs={12}>
+  <Typography variant="h6">Self Attested Document Information (Tick Marks the attachments)</Typography>
+  <TableContainer component={Paper}>
+    <Table sx={{ minWidth: 650 }} aria-label="past educational details table">
+      <TableHead>
+        <TableRow>
+          <TableCell>Sr.No.</TableCell>
+          <TableCell>Student Check List</TableCell>
+          <TableCell>Student</TableCell>
+          <TableCell>Office</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {selfAttested.map((row, rowIndex) => (
+          <TableRow key={rowIndex}>
+            <TableCell>
+              {row.srno}
+            </TableCell>
+            <TableCell>
+              {row.studentchecklist}
+            </TableCell>
+            <TableCell>
+            <Checkbox
+                    checked={row.student}
+                    onChange={() => handleCheckboxChange(rowIndex, 'student')}
+            />
+            </TableCell>
+            <TableCell>
+            <Checkbox
+                    checked={row.office}
+                    onChange={() => handleCheckboxChange(rowIndex, 'office')}
+            />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
+</Grid>
+    
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
               Submit
