@@ -9,8 +9,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Link } from "react-router-dom";
-import Pdf from 'react-to-pdf';
-import { PDFExport } from '@progress/kendo-react-pdf';
 
 
 
@@ -72,6 +70,12 @@ const ScholarshipForm = () => {
   const [guardianPanCard, setGuardianPanCard] = useState('');
   const [recommendationPerson1, setRecommendationPerson1] = useState('');
   const [recommendationPerson2, setRecommendationPerson2] = useState('');
+  const [amountSanctioned, setAmountSanctioned] = useState('');
+  const [approvalOne, setApprovalOne] = useState('');
+  const [approvalTwo, setApprovalTwo] = useState('');
+  const [approvalThree, setApprovalThree] = useState('');
+  const [remarks, setRemarks] = useState('')
+
   
   //state for handling form open and close
   const [formOpen, setFormOpen] = useState(false);
@@ -162,7 +166,7 @@ const ScholarshipForm = () => {
   useEffect(()=>{
     const sum1= scholarshipDetails.reduce((total,current)=>total+parseFloat(current.amount || 0),0);
     const sum2= parseFloat(otherScholarship || 0)+parseFloat(ownContribution || 0);
-    setAmtOfScholarshipReq(parseFloat(totalRequirement || 0)-(sum1+sum2));
+    setAmtOfScholarshipReq(parseFloat(totalReqForEducation || 0)-(sum1+sum2));
     });
 
   //Calculate the total requirements for the course
@@ -171,6 +175,11 @@ const ScholarshipForm = () => {
     setTotalReqForEducation(parseFloat(courseFees || 0)+parseFloat(otherExpenses || 0));
     
   }, [courseFees, otherExpenses]);
+
+  //Printing out entire page
+  const handlePrint = () => {
+    window.print();
+  };
 
   // Function to handle adding a new row to scholarship details table
   const handleAddRow = () => {
@@ -185,16 +194,16 @@ const ScholarshipForm = () => {
   };
 
   return (<>
-    <Button variant="outline" style={{backgroundColor:'#1976d2'}} onClick={handleFormOpen}>ZAKAT SCHOLARSHIP FORM</Button>
-    {formOpen===true &&
+    <Button variant="outline" style={{backgroundColor:'#d0d0e2'}} onClick={handleFormOpen}>ZAKAT SCHOLARSHIP FORM</Button>
+     
     <Box sx={{ flexGrow: 1, padding: 3 }}>
       <Link to="/" style={{ textDecoration: 'none' }}>
         <Button variant="outline" gutterBottom>
             HOME
         </Button>
         </Link>
-        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => generatePDF(targetRef, {filename: 'page.pdf'})} >
-          Download PDF
+        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => handlePrint()} >
+          Print
         </Button>
       <form onSubmit={handleSubmit} ref={targetref}>
         <Grid container spacing={3}>
@@ -397,7 +406,7 @@ const ScholarshipForm = () => {
               fullWidth
               label="Total Requirement"
               value={totalReqForEducation}
-              onChange={(e) => setTotalReqForEducation(e.target.value)}
+              onChange={(e) => {setTotalReqForEducation(e.target.value)}}
             />
           </Grid>
 
@@ -446,8 +455,8 @@ const ScholarshipForm = () => {
             <TextField
               fullWidth
               label="Total Requirement"
-              value={totalRequirement}
-              onChange={(e) => setTotalRequirement(e.target.value)}
+              value={totalReqForEducation}
+              onChange={(e) => setTotalReqForEducation(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -767,30 +776,30 @@ const ScholarshipForm = () => {
         Bonafied Certificate From The Head Of The Institution
       </Typography>
       <Typography variant="h7" gutterBottom>
-        I certify that Mr./Miss/Master
+        I certify that Mr./Miss/Master&nbsp;
         <TextField
           size="small"
-          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          sx={{ width: '150px', display: 'inline-block', verticalAlign: 'middle' }}
           value={applicantName}
-        /> 
-        is seeking admission/admitted in this institution for the year 20__ to 20__ in 
+        />&nbsp;
+        is seeking admission/admitted in this institution for the year 20__ to 20__ in&nbsp;
         <TextField
           size="small"
-          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          sx={{ width: '150px', display: 'inline-block', verticalAlign: 'middle' }}
           value={courseName}
-        /> 
-        Course. The Total Annual Fees is Rs.
+        />&nbsp;
+        Course. The Total Annual Fees is Rs.&nbsp;
         <TextField
           size="small"
-          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          sx={{ width: '150px', display: 'inline-block', verticalAlign: 'middle' }}
           value={courseFees}
-        /> 
-        . He/She is eligible for the Govt. Scholarship of Rs.
+        />
+        . He/She is eligible for the Govt. Scholarship of Rs.&nbsp;
         <TextField
           size="small"
-          sx={{ width: '150px', display: 'inline-block', marginLeft: '10px', marginRight: '10px', verticalAlign: 'middle' }}
+          sx={{ width: '150px', display: 'inline-block', verticalAlign: 'middle' }}
           value={amtOfScholarshipReq}
-        />
+        />&nbsp;
       </Typography>
       <br/>
       <br/>
@@ -843,6 +852,62 @@ const ScholarshipForm = () => {
     </Table>
   </TableContainer>
 </Grid>
+
+{/* Office use only */}
+<Grid item xs={12} >
+      <Typography variant="h6" gutterBottom>
+        For Office Use Only
+      </Typography>
+      
+        
+        <TextField
+          fullWidth
+          multiline
+          maxRows={4}
+          label='Remarks'
+          sx={{ marginBottom: 2 }}
+          value={remarks}
+          onChange={(e) => setRemarks(e.target.value)}
+        /> <br/>
+         
+        <TextField
+      fullWidth
+      label="Amount Sanctioned"
+      value={amountSanctioned}
+      onChange={(e) => setAmountSanctioned(e.target.value)}
+      sx={{ marginBottom: 2 }}/> <br/>
+
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}><div style={{width:'70%'}}>Approved by:</div><div style={{marginRight:100}}>Signature</div></div>
+
+        <div style={{display:'flex', justifyContent:'space-between'}}>   
+      <TextField
+      label="Person 1"
+      value={approvalOne}
+      onChange={(e) => setApprovalOne(e.target.value)}
+      sx={{ marginBottom: 2, width:'70%' }}
+    /> 
+       <p style={{marginTop:20}}> _____________________________</p></div>
+
+       <div style={{display:'flex', justifyContent:'space-between'}}>
+       <TextField
+      label="Person 2"
+      value={approvalTwo}
+      onChange={(e) => setApprovalTwo(e.target.value)}
+      sx={{ marginBottom: 2, width:'70%' }}
+    /> <p style={{marginTop:20}}> _____________________________</p></div>
+
+      <div style={{display:'flex', justifyContent:'space-between'}}>
+      <TextField
+      fullWidth
+      label="Person 3"
+      value={approvalThree}
+      onChange={(e) => setApprovalThree(e.target.value)}
+      sx={{ marginBottom: 2, width:'70%' }}
+    /> <p style={{marginTop:20}}> _____________________________</p></div>
+
+      
+    </Grid>
+
     
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
@@ -851,7 +916,7 @@ const ScholarshipForm = () => {
           </Grid>
         </Grid>
       </form>
-    </Box>}
+    </Box>
     </>
   );
 };

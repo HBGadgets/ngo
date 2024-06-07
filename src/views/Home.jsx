@@ -19,6 +19,7 @@ export default function Home() {
 
   return (
     <>
+    <img src="/campaign1.jpg" style={{width:'100%', height:'100%' }} alt=""/><img src="/campaign2.jpg" style={{width:'100%', height:'100%' }} alt=""/><img src="/campaign3.jpg" style={{width:'100%', height:'100%' }} alt=""/>
       <section style={{margin:40}}>
         <div className="gap-6" >
           <div style={{display:'flex', justifyContent:'space-between'}}>
@@ -61,8 +62,8 @@ many Muslim Students.<b style={{color:'green'}}> Jazak Allahu Khairan! (May Alla
 &nbsp;&nbsp;&nbsp;&nbsp;Our Muslim Community has realised now that only education can pull it out of its 
 backwardness. And the <b style={{color:'purple'}}> Today's Recipient of Zakat should become Tomorrow's Zakat Donor. </b> <b style={{color:'red'}}>That is our Mission...</b>
  <div style={{textAlign:'right'}}>
- <b style={{color:'red'}}>Haji Gulamnabi Shaikh</b><br/>
- <div style={{marginRight:'30px' }}> <p>Chief Promoter</p></div>
+ <b style={{color:'red'}}>Haji Gulamnabi Zohra Yunus Shaikh</b><br/>
+ <div style={{marginRight:'70px'}}> <p>Chief Promoter</p></div>
  </div>
           </p>
         </div>
