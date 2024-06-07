@@ -72,6 +72,9 @@ const ScholarshipForm = () => {
   const [guardianPanCard, setGuardianPanCard] = useState('');
   const [recommendationPerson1, setRecommendationPerson1] = useState('');
   const [recommendationPerson2, setRecommendationPerson2] = useState('');
+  
+  //state for handling form open and close
+  const [formOpen, setFormOpen] = useState(false);
 
   //States for familty details and income table
   const [familyMembers, setFamilyMembers] = useState([{ name: '', relationship: '', occupation: '', income: '' }]);
@@ -126,6 +129,10 @@ const ScholarshipForm = () => {
     { srno: 11, studentchecklist: 'Copy of bank pass book - First page (name, bank a/c no. & address details)', student: false, office: false },
   ]);
 
+  //opening form upon clicking
+  const handleFormOpen=()=>{
+    setFormOpen(true);
+  }
   //check box handling
   const handleCheckboxChange = (rowIndex, type) => {
     const updatedSelfAttested = [...selfAttested];
@@ -177,11 +184,13 @@ const ScholarshipForm = () => {
     setScholarshipDetails(newDetails);
   };
 
-  return (
+  return (<>
+    <Button variant="outline" style={{backgroundColor:'#1976d2'}} onClick={handleFormOpen}>ZAKAT SCHOLARSHIP FORM</Button>
+    {formOpen===true &&
     <Box sx={{ flexGrow: 1, padding: 3 }}>
       <Link to="/" style={{ textDecoration: 'none' }}>
         <Button variant="outline" gutterBottom>
-            ZAKAT SCHOLARSHIP FORM
+            HOME
         </Button>
         </Link>
         <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => generatePDF(targetRef, {filename: 'page.pdf'})} >
@@ -842,7 +851,8 @@ const ScholarshipForm = () => {
           </Grid>
         </Grid>
       </form>
-    </Box>
+    </Box>}
+    </>
   );
 };
 

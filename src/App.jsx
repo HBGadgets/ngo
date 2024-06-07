@@ -45,8 +45,11 @@ function App() {
               </svg>
             </button>
           </div>
+          <p className="text-4xl font-bold text-black-600" style={{ fontSize: 30, background: 'linear-gradient(to right, red, blue)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginRight:10 }}>
+  UMMAT KI KHIDMAT FOUNDATION      
+</p>
 
-          <div className="hidden lg:flex lg:gap-x-12">
+          <div className="hidden lg:flex lg:gap-x-4">
             <NavLink
               end
               to={"/about"}
